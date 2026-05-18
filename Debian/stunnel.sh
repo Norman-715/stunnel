@@ -2,7 +2,7 @@
 #auto install deb
 
 # details
-country=SA
+country=ZA
 state=South Africa
 locality=Johannesburg
 organization=HUGO SSH
