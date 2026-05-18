@@ -2,11 +2,11 @@
 #auto install deb
 
 # details
-country=ZA
+country=SA
 state=South Africa
 locality=Johannesburg
-organization=hugossh
-organizationalunit=hugossh
+organization=HUGO SSH
+organizationalunit=HUGO SSH
 commonname=hugossh.indevs.in
 email=hugoxd2919@gmail.com
 
@@ -36,10 +36,11 @@ echo "=================  Creating Cert OpenSSL ======================"
 echo "========================================================="
 #Creating Certificate
 openssl genrsa -out key.pem 2048
-openssl req -new -x509 -key key.pem -out cert.pem -days 1050
+openssl req -new -x509 -key key.pem -out cert.pem -days 1095 \
 -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
-cat cert.pem key.pem >>/etc/stunnel/stunnel.pem
-rm key.pem cert.pem
+cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
+
+# configuring stunnel
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 service stunnel4 restart
 
