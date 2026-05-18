@@ -5,8 +5,8 @@
 country=ZA
 state=South Africa
 locality=Johannesburg
-organization=HUGO SSH
-organizationalunit=HUGO SSH
+organization=hugossh
+organizationalunit=hugossh
 commonname=hugossh.indevs.in
 email=hugoxd2919@gmail.com
 
@@ -40,8 +40,6 @@ openssl req -new -x509 -key key.pem -out cert.pem -days 1050 >/dev/null 2>&1
 -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
 cat cert.pem key.pem >>/etc/stunnel/stunnel.pem
 rm key.pem cert.pem >/dev/null 2>&1
-					
-# configuring stunnel
 sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 service stunnel4 restart
 
