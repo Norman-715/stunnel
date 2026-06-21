@@ -1,0 +1,56 @@
+#!/bin/bash
+installation_dir="/opt"
+badvpn_dir_name="badvpn-1.999.130"
+
+# --- 1. System Prep ---
+touch /etc/rc.local
+sudo apt-get update
+sudo apt-get install cmake build-essential screen wget gcc g++ make unzip -y
+
+# --- 2. Clean Up Old Cache/Downloads (Crucial to break the error loop) ---
+rm -rf "$installation_dir/$badvpn_dir_name"
+rm -f 1.999.130
+
+# --- 3. Download & Extract ---
+wget https://codeload.github.com/ambrop72/badvpn/zip/1.999.130
+unzip -o 1.999.130 -d "$installation_dir/"
+
+# --- 4. Modify Code & Compile ---
+cd "$installation_dir/$badvpn_dir_name"
+
+# Fix the CMake minimum version requirement directly in the file
+sed -i 's/cmake_minimum_required(VERSION 2.6)/cmake_minimum_required(VERSION 3.5)/' CMakeLists.txt
+
+# Create separate build folder (Out-of-source build)
+mkdir build && cd build
+
+# Run CMake and Install
+cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1
+make
+make install
+
+# --- 5. Configuration & Startup ---
+echo
+echo "***** BadVPN Runs on Port 7300 *****"
+
+# Ensure the binary is executable
+chmod +x /usr/local/bin/badvpn-udpgw
+
+# Configure startup on boot
+sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
+chmod +x /etc/rc.local
+
+# Start BadVPN right now
+screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
+
+# Verify it is listening
+sleep 1
+netstat -nlpt | grep 7300
+
+# --- 6. Final Clean Up ---
+echo
+echo "Removing unnecessary file(s)..."
+cd ~
+rm -f 1.999.130
+echo "Removed!!"
+echo "Enjoy!!"
